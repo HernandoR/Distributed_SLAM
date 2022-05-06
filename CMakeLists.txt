@@ -65,23 +65,12 @@ include_directories(
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 
 add_library(ORB_SLAM3 SHARED
-        src/Atlas/Atlas.cc
-        src/Visualise/Viewer.cc
         src/Settings.cc
-        src/Atlas/Map.cc
-        src/Atlas/MapPoint.cc
-        src/Atlas/KeyFrame.cc
         src/Frame.cc
         src/Config.cc
-        src/Types/Converter.cc
-        src/Visualise/FrameDrawer.cc
-        src/Types/G2oTypes.cc
         src/GeometricTools.cc
-        src/Types/ImuTypes.cc
-        src/Atlas/KeyFrameDatabase.cc
         src/LocalMapping.cc
         src/LoopClosing.cc
-        src/Visualise/MapDrawer.cc
         src/MLPnPsolver.cpp
         src/OptimizableTypes.cpp
         src/Optimizer.cc
@@ -90,56 +79,70 @@ add_library(ORB_SLAM3 SHARED
         src/Sim3Solver.cc
         src/System.cc
         src/Tracking.cc
-        src/Visualise/TwoViewReconstruction.cc
         src/CameraModels/Pinhole.cpp
         src/CameraModels/KannalaBrandt8.cpp
-        include/Atlas/Atlas.h
-        include/Visualise/Viewer.h
+        src/Atlas/Atlas.cc
+        src/Atlas/KeyFrame.cc
+        src/Atlas/KeyFrameDatabase.cc
+        src/Atlas/MapPoint.cc
+        src/Atlas/Map.cc
+        src/Types/ImuTypes.cc
+        src/Types/G2oTypes.cc
+        src/Types/Converter.cc
+        src/Visualise/Viewer.cc
+        src/Visualise/TwoViewReconstruction.cc
+        src/Visualise/MapDrawer.cc
+        src/Visualise/FrameDrawer.cc
         include/Settings.h
-        include/Atlas/Map.h
-        include/Atlas/KeyFrame.h
-        include/Atlas/MapPoint.h
         include/Frame.h
         include/Config.h
         include/LocalMapping.h
         include/MLPnPsolver.h
         include/Optimizer.h
         include/GeometricTools.h
-        include/Visualise/G2oTypes.h
-        include/Visualise/ImuTypes.h
-        include/Visualise/SerializationUtils.h
         include/ORBextractor.h
-        include/Visualise/ORBVocabulary.h
-        include/Visualise/TwoViewReconstruction.h
         include/LoopClosing.h
-        include/Visualise/MapDrawer.h
         include/OptimizableTypes.h
         include/Sim3Solver.h
         include/ORBmatcher.h
-        include/Visualise/Converter.h
         include/Tracking.h
-        include/Atlas/KeyFrameDatabase.h
         include/System.h
-        include/Visualise/FrameDrawer.h
         include/CameraModels/Pinhole.h
         include/CameraModels/KannalaBrandt8.h
         include/CameraModels/GeometricCamera.h
+        include/Atlas/Atlas.h
+        include/Atlas/KeyFrame.h
+        include/Atlas/KeyFrameDatabase.h
+        include/Atlas/MapPoint.h
+        include/Atlas/Map.h
+        include/Visualise/FrameDrawer.h
+        include/Visualise/MapDrawer.h
+        include/Visualise/TwoViewReconstruction.h
+        include/Visualise/Viewer.h
+        include/Visualise/ORBVocabulary.h
+        include/Visualise/SerializationUtils.h
+        include/Visualise/ImuTypes.h
+        include/Visualise/G2oTypes.h
+        include/Visualise/Converter.h
         )
 
 add_subdirectory(Thirdparty/g2o)
 add_subdirectory(Thirdparty/DBoW2)
 
-#target_link_libraries(ORB_SLAM3
-#        ${OpenCV_LIBS}
-#        ${EIGEN3_LIBS}
-#        ${Pangolin_LIBRARIES}
-#        # whats up
-#        ${PROJECT_SOURCE_DIR}/lib/libDBoW2.so
-#        ${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/libg2o.so
-#        -lboost_serialization
-#        -lcrypto
-#        )
+target_link_libraries(ORB_SLAM3
+        ${OpenCV_LIBS}
+        ${EIGEN3_LIBS}
+        ${Pangolin_LIBRARIES}
+        # whats up
+        ${PROJECT_SOURCE_DIR}/lib/libDBoW2.so
+        ${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/libg2o.so
+        -lboost_serialization
+        -lcrypto
+        )
 
-#add_executable(stereo_kitti
-#        Examples/Stereo/stereo_kitti.cc)
-#target_link_libraries(stereo_kitti ORB_SLAM3)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Stereo)
+
+add_executable(stereo_kitti
+        Examples/Stereo/stereo_kitti.cc)
+
+target_link_libraries(stereo_kitti ORB_SLAM3)

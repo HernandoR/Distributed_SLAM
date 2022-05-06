@@ -20,11 +20,11 @@
 #ifndef VIEWER_H
 #define VIEWER_H
 
-//#include "FrameDrawer.h"
-//#include "MapDrawer.h"
-//#include "Tracking.h"
-//#include "System.h"
-//#include "Settings.h"
+#include "Visualise/FrameDrawer.h"
+#include "Visualise/MapDrawer.h"
+#include "Tracking.h"
+#include "System.h"
+#include "Settings.h"
 
 #include <mutex>
 #include <Eigen/Core>
@@ -33,73 +33,78 @@
 
 using namespace std;
 
-namespace ORB_SLAM3
-{
+namespace ORB_SLAM3 {
 
-class Tracking;
-class FrameDrawer;
-class MapDrawer;
-class System;
-class Settings;
+    class Tracking;
 
-class Viewer
-{
-public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-    Viewer(System* pSystem, FrameDrawer* pFrameDrawer, MapDrawer* pMapDrawer, Tracking *pTracking, const std::string &strSettingPath, Settings* settings);
+    class FrameDrawer;
 
-    void newParameterLoader(Settings* settings);
+    class MapDrawer;
 
-    // Main thread function. Draw points, keyframes, the current camera pose and the last processed
-    // frame. Drawing is refreshed according to the camera fps. We use Pangolin.
-    void Run();
+    class System;
 
-    void RequestFinish();
+    class Settings;
 
-    void RequestStop();
+    class Viewer {
+    public:
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        Viewer(System *pSystem, FrameDrawer *pFrameDrawer, MapDrawer *pMapDrawer, Tracking *pTracking,
+               const std::string &strSettingPath, Settings *settings);
 
-    bool isFinished();
+        void newParameterLoader(Settings *settings);
 
-    bool isStopped();
+        // Main thread function. Draw points, keyframes, the current camera pose and the last processed
+        // frame. Drawing is refreshed according to the camera fps. We use Pangolin.
+        void Run();
 
-    bool isStepByStep();
+        void RequestFinish();
 
-    void Release();
+        void RequestStop();
 
-    //void SetTrackingPause();
+        bool isFinished();
 
-    bool both;
-private:
+        bool isStopped();
 
-    bool ParseViewerParamFile(cv::FileStorage &fSettings);
+        bool isStepByStep();
 
-    bool Stop();
+        void Release();
 
-    System* mpSystem;
-    FrameDrawer* mpFrameDrawer;
-    MapDrawer* mpMapDrawer;
-    Tracking* mpTracker;
+        //void SetTrackingPause();
 
-    // 1/fps in ms
-    double mT;
-    float mImageWidth, mImageHeight;
-    float mImageViewerScale;
+        bool both;
+    private:
 
-    float mViewpointX, mViewpointY, mViewpointZ, mViewpointF;
+        bool ParseViewerParamFile(cv::FileStorage &fSettings);
 
-    bool CheckFinish();
-    void SetFinish();
-    bool mbFinishRequested;
-    bool mbFinished;
-    std::mutex mMutexFinish;
+        bool Stop();
 
-    bool mbStopped;
-    bool mbStopRequested;
-    std::mutex mMutexStop;
+        System *mpSystem;
+        FrameDrawer *mpFrameDrawer;
+        MapDrawer *mpMapDrawer;
+        Tracking *mpTracker;
 
-    bool mbStopTrack;
+        // 1/fps in ms
+        double mT;
+        float mImageWidth, mImageHeight;
+        float mImageViewerScale;
 
-};
+        float mViewpointX, mViewpointY, mViewpointZ, mViewpointF;
+
+        bool CheckFinish();
+
+        void SetFinish();
+
+        bool mbFinishRequested;
+        bool mbFinished;
+        std::mutex mMutexFinish;
+
+        bool mbStopped;
+        bool mbStopRequested;
+        std::mutex mMutexStop;
+
+        bool mbStopTrack;
+
+    };
 
 }
 
