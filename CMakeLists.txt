@@ -3,7 +3,6 @@ project(Distributed_SLAM)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(Distributed_SLAM main.cpp)
 
 IF (NOT CMAKE_BUILD_TYPE)
     SET(CMAKE_BUILD_TYPE Release)
@@ -93,6 +92,7 @@ add_library(ORB_SLAM3 SHARED
         src/Visualise/TwoViewReconstruction.cc
         src/Visualise/MapDrawer.cc
         src/Visualise/FrameDrawer.cc
+        #                src/Disctributed/Viewer.cpp
         include/Settings.h
         include/Frame.h
         include/Config.h
@@ -115,15 +115,16 @@ add_library(ORB_SLAM3 SHARED
         include/Atlas/KeyFrameDatabase.h
         include/Atlas/MapPoint.h
         include/Atlas/Map.h
+        include/Types/G2oTypes.h
+        include/Types/ImuTypes.h
+        include/Types/Converter.h
         include/Visualise/FrameDrawer.h
         include/Visualise/MapDrawer.h
         include/Visualise/TwoViewReconstruction.h
         include/Visualise/Viewer.h
         include/Visualise/ORBVocabulary.h
         include/Visualise/SerializationUtils.h
-        include/Types/ImuTypes.h
-        include/Types/G2oTypes.h
-        include/Types/Converter.h
+        #        include/Distributed/Viewer.h
         )
 
 add_subdirectory(Thirdparty/g2o)
@@ -146,3 +147,18 @@ add_executable(stereo_kitti
         Examples/Stereo/stereo_kitti.cc)
 
 target_link_libraries(stereo_kitti ORB_SLAM3)
+
+
+#Distributed examples
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Distributed)
+
+add_executable(Distributed_stereo
+        Examples/Distributed/Distributed_stereo.cpp
+        )
+target_link_libraries(Distributed_stereo ORB_SLAM3)
+
+add_library(Distributed_SLAM SHARED
+        src/Disctributed/Viewer.cpp
+        include/Distributed/Viewer.h)
+
+target_link_libraries(Distributed_SLAM ORB_SLAM3)

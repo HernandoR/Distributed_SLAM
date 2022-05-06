@@ -19,7 +19,7 @@
 #include<iostream>
 #include<algorithm>
 #include<fstream>
-#include<iomanip> 
+#include<iomanip>
 #include<chrono>
 
 #include<opencv2/core/core.hpp>
@@ -31,11 +31,9 @@ using namespace std;
 void LoadImages(const string &strPathToSequence, vector<string> &vstrImageLeft,
                 vector<string> &vstrImageRight, vector<double> &vTimestamps);
 
-int main(int argc, char **argv)
-{
-    if(argc != 4)
-    {
-        cerr << endl << "Usage: ./stereo_kitti path_to_vocabulary path_to_settings path_to_sequence" << endl;
+int main(int argc, char **argv) {
+    if (argc != 4) {
+        cerr << endl << "Usage: ./stereo_kitti path_to_vocabulary path_to_settings path_to_sequence " << endl;
         return 1;
     }
 
@@ -43,7 +41,7 @@ int main(int argc, char **argv)
     vector<string> vstrImageLeft;
     vector<string> vstrImageRight;
     vector<double> vTimestamps;
-    
+
     LoadImages(string(argv[3]), vstrImageLeft, vstrImageRight, vTimestamps);
     // path_to_sequence should have at least 3 sub intents : times.txt img0 img1
     // see LoadImages in this file for detail
@@ -51,7 +49,7 @@ int main(int argc, char **argv)
     const auto nImages = vstrImageLeft.size();
 
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
-    ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::STEREO,true);
+    ORB_SLAM3::System SLAM(argv[1], argv[2], ORB_SLAM3::System::STEREO, true);
     float imageScale = SLAM.GetImageScale();
 
     // Vector for tracking time statistics
@@ -60,7 +58,7 @@ int main(int argc, char **argv)
 
     cout << endl << "-------" << endl;
     cout << "Start processing sequence ..." << endl;
-    cout << "Images in the sequence: " << nImages << endl << endl;   
+    cout << "Images in the sequence: " << nImages << endl << endl;
 
     double t_track = 0.f;
     double t_resize = 0.f;
@@ -68,31 +66,29 @@ int main(int argc, char **argv)
     // Main loop
     cv::Mat imLeft, imRight;
 //    std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
-    auto start_time_point=std::chrono::steady_clock::now();
-    for(int ni=0; ni<nImages; ni++)
-    {
+    auto start_time_point = std::chrono::steady_clock::now();
+    for (int ni = 0; ni < nImages; ni++) {
         // Read left and right images from file
-        imLeft = cv::imread(vstrImageLeft[ni],cv::IMREAD_UNCHANGED); //,cv::IMREAD_UNCHANGED);
-        imRight = cv::imread(vstrImageRight[ni],cv::IMREAD_UNCHANGED); //,cv::IMREAD_UNCHANGED);
+        imLeft = cv::imread(vstrImageLeft[ni], cv::IMREAD_UNCHANGED); //,cv::IMREAD_UNCHANGED);
+        imRight = cv::imread(vstrImageRight[ni], cv::IMREAD_UNCHANGED); //,cv::IMREAD_UNCHANGED);
         double tframe = vTimestamps[ni];    // time of which img were taken
 
-        if(imLeft.empty())
-        {
+        if (imLeft.empty()) {
             cerr << endl << "Failed to load image at: "
                  << string(vstrImageLeft[ni]) << endl;
             return 1;
         }
 
-        if(imageScale != 1.f) 
-        // TODO: 1.f ?
+        if (imageScale != 1.f)
+            // TODO: 1.f ?
         {
 #ifdef REGISTER_TIMES
-    #ifdef COMPILEDWITHC17
+#ifdef COMPILEDWITHC17
             std::chrono::steady_clock::time_point t_Start_Resize = std::chrono::steady_clock::now();
             // time stamp
-    #else
+#else
             std::chrono::monotonic_clock::time_point t_Start_Resize = std::chrono::monotonic_clock::now();
-    #endif
+#endif
 #endif
             // resize
             // todo: seems have to specific round method
@@ -102,11 +98,11 @@ int main(int argc, char **argv)
             cv::resize(imLeft, imLeft, cv::Size(width, height));
             cv::resize(imRight, imRight, cv::Size(width, height));
 #ifdef REGISTER_TIMES
-    #ifdef COMPILEDWITHC17
+#ifdef COMPILEDWITHC17
             std::chrono::steady_clock::time_point t_End_Resize = std::chrono::steady_clock::now();
-    #else
+#else
             std::chrono::monotonic_clock::time_point t_End_Resize = std::chrono::monotonic_clock::now();
-    #endif
+#endif
             t_resize = std::chrono::duration_cast<std::chrono::duration<double,std::milli> >(t_End_Resize - t_Start_Resize).count();
             // ? time used to resize pic, by milisec
             SLAM.InsertResizeTime(t_resize);
@@ -120,7 +116,7 @@ int main(int argc, char **argv)
 #endif
 
         // Pass the images to the SLAM system
-        SLAM.TrackStereo(imLeft,imRight,tframe);
+        SLAM.TrackStereo(imLeft, imRight, tframe);
 
 #ifdef COMPILEDWITHC17
         std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
@@ -133,39 +129,38 @@ int main(int argc, char **argv)
         SLAM.InsertTrackTime(t_track);
 #endif
 
-        double ttrack= std::chrono::duration_cast<std::chrono::duration<double> >(t2 - t1).count();
+        double ttrack = std::chrono::duration_cast<std::chrono::duration<double> >(t2 - t1).count();
 
-        vTimesTrack[ni]=ttrack;
+        vTimesTrack[ni] = ttrack;
 
         // Wait to load the next frame
 
         // what is it waiting for?
         // it seems that it calculates the time it has used to tack, compare with which has been available,
         // sleep the overlap. so that it simulates
-        double T=0;
-        if(ni<nImages-1)
-            T = vTimestamps[ni+1]-tframe;
-        else if(ni>0)
-            T = tframe-vTimestamps[ni-1];
+        double T = 0;
+        if (ni < nImages - 1)
+            T = vTimestamps[ni + 1] - tframe;
+        else if (ni > 0)
+            T = tframe - vTimestamps[ni - 1];
 
-        if(ttrack<T)
-            usleep((T-ttrack)*1e6);
+        if (ttrack < T)
+            usleep((T - ttrack) * 1e6);
     }
 
     // Stop all threads
     SLAM.Shutdown();
 
     // Tracking time statistics
-    sort(vTimesTrack.begin(),vTimesTrack.end());
+    sort(vTimesTrack.begin(), vTimesTrack.end());
     float totaltime = 0;
-    for(int ni=0; ni<nImages; ni++)
-    {
-        totaltime+=vTimesTrack[ni];
+    for (int ni = 0; ni < nImages; ni++) {
+        totaltime += vTimesTrack[ni];
     }
     cout << "-------" << endl << endl;
-    cout << "median tracking time: " << vTimesTrack[nImages/2] << endl;
-    cout << "mean tracking time: " << totaltime/nImages << endl;
-    cout << "total processing Time: " << totaltime<<endl;
+    cout << "median tracking time: " << vTimesTrack[nImages / 2] << endl;
+    cout << "mean tracking time: " << totaltime / nImages << endl;
+    cout << "total processing Time: " << totaltime << endl;
 
     // Save camera trajectory
     SLAM.SaveTrajectoryKITTI("CameraTrajectory.txt");
@@ -174,17 +169,14 @@ int main(int argc, char **argv)
 }
 
 void LoadImages(const string &strPathToSequence, vector<string> &vstrImageLeft,
-                vector<string> &vstrImageRight, vector<double> &vTimestamps)
-{
+                vector<string> &vstrImageRight, vector<double> &vTimestamps) {
     ifstream fTimes;
     string strPathTimeFile = strPathToSequence + "/times.txt";
     fTimes.open(strPathTimeFile.c_str());
-    while(!fTimes.eof())
-    {
+    while (!fTimes.eof()) {
         string s;
-        getline(fTimes,s);
-        if(!s.empty())
-        {
+        getline(fTimes, s);
+        if (!s.empty()) {
             stringstream ss;
             ss << s;
             double t;
@@ -200,8 +192,7 @@ void LoadImages(const string &strPathToSequence, vector<string> &vstrImageLeft,
     vstrImageLeft.resize(nTimes);
     vstrImageRight.resize(nTimes);
 
-    for(int i=0; i<nTimes; i++)
-    {
+    for (int i = 0; i < nTimes; i++) {
         stringstream ss;
         ss << setfill('0') << setw(6) << i;
         vstrImageLeft[i] = strPrefixLeft + ss.str() + ".png";

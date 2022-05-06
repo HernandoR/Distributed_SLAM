@@ -1,5 +1,10 @@
+//
+// Created by lz on 22-5-6.
+//
 
-#include "Visualise/Viewer.h"
+#include "Distributed/Viewer.h"
+
+//#include "Visualise/Viewer.h"
 #include <pangolin/pangolin.h>
 #include "Settings.h"
 
@@ -8,37 +13,8 @@
 
 namespace ORB_SLAM3 {
 
-//    Viewer::Viewer(System *pSystem, FrameDrawer *pFrameDrawer, MapDrawer *pMapDrawer, Tracking *pTracking,
-//                   const string &strSettingPath, Settings *settings) :
-//            both(false), mpSystem(pSystem), mpFrameDrawer(pFrameDrawer), mpMapDrawer(pMapDrawer), mpTracker(pTracking),
-//            mbFinishRequested(false), mbFinished(true), mbStopped(true), mbStopRequested(false) {
-//        if (settings) {
-//            newParameterLoader(settings);
-//        } else {
-//
-//            cv::FileStorage fSettings(strSettingPath, cv::FileStorage::READ);
-//
-//            bool is_correct = ParseViewerParamFile(fSettings);
-//
-//            if (!is_correct) {
-//                std::cerr << "**ERROR in the config file, the format is not correct**" << std::endl;
-//                try {
-//                    throw -1;
-//                }
-//                catch (std::exception &e) {
-//
-//                }
-//            }
-//        }
-//
-//        mbStopTrack = false;
-//    }
-    atomic<int> Viewer::smpWindow_ID = 0;
-
-    Viewer::Viewer(System *pSystem, FrameDrawer *pFrameDrawer, MapDrawer *pMapDrawer, Tracking *pTracking,
-                   const string &strSettingPath, Settings *settings) :
-            both(false), mpSystem(pSystem), mpFrameDrawer(pFrameDrawer), mpMapDrawer(pMapDrawer), mpTracker(pTracking),
-            mbFinishRequested(false), mbFinished(true), mbStopped(true), mbStopRequested(false) {
+    Distributed_Viewer::Distributed_Viewer(System *pSystem, FrameDrawer *pFrameDrawer, MapDrawer *pMapDrawer,
+                                           Tracking *pTracking, const string &strSettingPath, Settings *settings) {
         if (settings) {
             newParameterLoader(settings);
         } else {
@@ -53,17 +29,12 @@ namespace ORB_SLAM3 {
                     throw -1;
                 }
                 catch (std::exception &e) {
+
                 }
             }
         }
 
         mbStopTrack = false;
-        mpWindow_ID = smpWindow_ID;
-        smpWindow_ID++;
-    }
-
-    Viewer::Viewer(const Viewer &) {
-        smpWindow_ID++;
     }
 
     void Viewer::newParameterLoader(Settings *settings) {
@@ -98,7 +69,7 @@ namespace ORB_SLAM3 {
         if (!node.empty()) {
             mImageWidth = node.real();
         } else {
-            std::cerr << "*Camera.width parameter doesn't exist or is not a real number* .." << std::endl;
+            std::cerr << "*Camera.width parameter doesn't exist or is not a real number*" << std::endl;
             b_miss_params = true;
         }
 
@@ -153,9 +124,9 @@ namespace ORB_SLAM3 {
     void Viewer::Run() {
         mbFinished = false;
         mbStopped = false;
-        cout << "starting pangolin viewer on thread " + to_string(mpWindow_ID) << endl;
-        pangolin::CreateWindowAndBind("ORB-SLAM3: Map Viewer " + to_string(mpWindow_ID), 1024, 768);
-        cout << "created pangolin viewer on thread " + to_string(mpWindow_ID) << endl;
+
+        pangolin::CreateWindowAndBind("Distributed-ORB-SLAM3: Map Viewer", 1024, 768);
+
         // 3D Mouse handler requires depth testing to be enabled
         glEnable(GL_DEPTH_TEST);
 
@@ -194,7 +165,9 @@ namespace ORB_SLAM3 {
         Twc.SetIdentity();
         pangolin::OpenGlMatrix Ow; // Oriented with g in the z axis
         Ow.SetIdentity();
-        cv::namedWindow("ORB-SLAM3: Current Frame " + to_string(mpWindow_ID));
+
+
+        cv::namedWindow("ORB-SLAM3: Current Frame");
 
         bool bFollow = true;
         bool bLocalizationMode = false;
@@ -314,7 +287,7 @@ namespace ORB_SLAM3 {
                 cv::resize(toShow, toShow, cv::Size(width, height));
             }
 
-            cv::imshow("ORB-SLAM3: Current Frame " + to_string(mpWindow_ID), toShow);
+            cv::imshow("ORB-SLAM3: Current Frame", toShow);
             cv::waitKey(mT);
 
             if (menuReset) {
@@ -410,9 +383,6 @@ namespace ORB_SLAM3 {
         mbStopped = false;
     }
 
-    Viewer::~Viewer() {
-        smpWindow_ID--;
-    }
 /*void Viewer::SetTrackingPause()
 {
     mbStopTrack = true;

@@ -126,10 +126,10 @@ namespace ORB_SLAM3 {
                                     const vector<IMU::Point> &vImuMeas = vector<IMU::Point>(), string filename = "");
 
 
-        // This stops local mapping thread (map building) and performs only camera tracking.
+        // This resumes local mapping thread and performs SLAM again.
         void ActivateLocalizationMode();
 
-        // This resumes local mapping thread and performs SLAM again.
+        // This stops local mapping thread (map building) and performs only camera tracking.
         void DeactivateLocalizationMode();
 
         // Returns true if there have been a big map change (loop closure, global BA)
@@ -178,7 +178,7 @@ namespace ORB_SLAM3 {
         void SaveTrajectoryKITTI(const string &filename);
 
         // TODO: Save/Load functions
-        // SaveMap(const string &filename);
+//         SaveMap(const string &filename);
         // LoadMap(const string &filename);
 
         // Information from most recent processed frame

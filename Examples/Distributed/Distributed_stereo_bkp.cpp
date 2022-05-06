@@ -1,26 +1,13 @@
-/**
-* This file is part of ORB-SLAM3
-*
-* Copyright (C) 2017-2021 Carlos Campos, Richard Elvira, Juan J. Gómez Rodríguez, José M.M. Montiel and Juan D. Tardós, University of Zaragoza.
-* Copyright (C) 2014-2016 Raúl Mur-Artal, José M.M. Montiel and Juan D. Tardós, University of Zaragoza.
-*
-* ORB-SLAM3 is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
-* License as published by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* ORB-SLAM3 is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
-* the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License along with ORB-SLAM3.
-* If not, see <http://www.gnu.org/licenses/>.
-*/
+//
+// Created by lz on 22-5-4.
+//
 
 #include<iostream>
 #include<algorithm>
 #include<fstream>
 #include<iomanip>
 #include<chrono>
+#include<thread>
 
 #include<opencv2/core/core.hpp>
 
@@ -30,92 +17,11 @@ using namespace std;
 
 void LoadImages(const string &strPathToSequence, vector<string> &vstrImageLeft,
                 vector<string> &vstrImageRight, vector<double> &vTimestamps);
-
-void StartSLAMSystem(const string vocFile, const string settingsFile, unsigned long nImages,
-                     vector<string> &vstrImageLeft, vector<string> &vstrImageRight, vector<double> &vTimestamps);
-
-int main(int argc, char **argv) {
-    if (argc != 4) {
-        cerr << endl << "Usage: ./stereo_kitti path_to_vocabulary path_to_settings path_to_sequence " << endl;
-        return 1;
-    }
-
-    // Retrieve paths to images
-    vector<string> vstrImageLeft;
-    vector<string> vstrImageRight;
-    vector<double> vTimestamps;
-
-    LoadImages(string(argv[3]), vstrImageLeft, vstrImageRight, vTimestamps);
-    // path_to_sequence should have at least 3 sub intents : times.txt img0 img1
-    // see LoadImages in this file for detail
-
-    auto SPLIT_NUM = 2;
-    const auto nImages = vstrImageLeft.size();
-    const int subNum = ceil(nImages / SPLIT_NUM);
-
-    vector<vector<string>> subLeftImg(SPLIT_NUM), subRightImg(SPLIT_NUM);
-    vector<vector<double>> subvTimestamps(SPLIT_NUM);
-    vector<std::thread> thread_pool(SPLIT_NUM);
+//void StartSLAMSystem(const string vocFile,const string settingsFile,const auto nImages);
 
 
-//    StartSLAMSystem(argv[1], argv[2], nImages, vstrImageLeft, vstrImageRight, vTimestamps);
-
-    for (int i = 0; i < SPLIT_NUM; i++) {
-
-        if (i < (SPLIT_NUM - 1)) {
-            subLeftImg[i].assign(vstrImageLeft.begin() + i * subNum, vstrImageLeft.begin() + (i + 1) * subNum);
-            subRightImg[i].assign(vstrImageRight.begin() + i * subNum, vstrImageRight.begin() + (i + 1) * subNum);
-            subvTimestamps[i].assign(vTimestamps.begin() + i * subNum, vTimestamps.begin() + (i + 1) * subNum);
-
-        } else {
-            subLeftImg[i].assign(vstrImageLeft.begin() + i * subNum, vstrImageLeft.end());
-            subRightImg[i].assign(vstrImageRight.begin() + i * subNum, vstrImageRight.end());
-            subvTimestamps[i].assign(vTimestamps.begin() + i * subNum, vTimestamps.end());
-        }
-
-
-    }
-//    thread_pool[1] = std::thread(StartSLAMSystem, argv[1], argv[2], nImages,
-//                                 std::ref(vstrImageLeft), std::ref(vstrImageRight), std::ref(vTimestamps));
-
-    int i = 0;
-
-    for (auto &lthr: thread_pool) {
-        unsigned long nums = subLeftImg[i].size();
-//        if (i == 1) {
-        thread_pool[i] = std::thread(StartSLAMSystem, argv[1], argv[2], nums,
-                                     std::ref(subLeftImg[i]), std::ref(subRightImg[i]),
-                                     std::ref(subvTimestamps[i]));
-//        }
-        i++;
-    }
-
-    cout << "started " << SPLIT_NUM << " thread" << endl <<
-         endl;
-
-//
-    for (
-        auto &lthr
-            : thread_pool) {
-        if (lthr.
-
-                joinable()
-
-                )
-            lthr.
-
-                    join();
-
-    }
-    return 0;
-
-};
-
-void StartSLAMSystem(const string vocFile, const string settingsFile, unsigned long nImages,
-                     vector<string> &vstrImageLeft, vector<string> &vstrImageRight, vector<double> &vTimestamps) {
-
-
-
+auto StartSLAMSystem(const string vocFile, const string settingsFile, unsigned long nImages,
+                     vector<string> vstrImageLeft, vector<string> vstrImageRight, vector<double> vTimestamps, int tid) {
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
     ORB_SLAM3::System SLAM(vocFile, settingsFile, ORB_SLAM3::System::STEREO, true);
     float imageScale = SLAM.GetImageScale();
@@ -142,9 +48,10 @@ void StartSLAMSystem(const string vocFile, const string settingsFile, unsigned l
         double tframe = vTimestamps[ni];    // time of which img were taken
 
         if (imLeft.empty()) {
-            cerr << endl << "Failed to load image at: "
-                 << string(vstrImageLeft[ni]) << endl;
+//            cerr << endl << "Failed to load image at: "
+//                 << string(vstrImageLeft[ni]) << endl;
 //            return 1;
+            throw "Failed to load image at: " + string(vstrImageLeft[ni]);
         }
 
         if (imageScale != 1.f)
@@ -229,12 +136,75 @@ void StartSLAMSystem(const string vocFile, const string settingsFile, unsigned l
     cout << "median tracking time: " << vTimesTrack[nImages / 2] << endl;
     cout << "mean tracking time: " << totaltime / nImages << endl;
     cout << "total processing Time: " << totaltime << endl;
-
+    auto realtime = vTimestamps.back() - vTimestamps.front();
+    cout << "total processed video length: " << realtime << endl;
+    cout << "work load" << totaltime / realtime << endl;
     // Save camera trajectory
-    SLAM.SaveTrajectoryKITTI("CameraTrajectory.txt");
+    SLAM.SaveTrajectoryKITTI("CameraTrajectory" + to_string(tid) + ".txt");
+    return 0;
 
-//    return 0;
 }
+
+int main(int argc, char **argv) {
+    if (argc != 4) {
+        cerr << endl << "Usage: ./stereo_kitti path_to_vocabulary path_to_settings path_to_sequence" << endl;
+        return 1;
+    }
+
+    // Retrieve paths to images
+    vector<string> vstrImageLeft;
+    vector<string> vstrImageRight;
+    vector<double> vTimestamps;
+
+    LoadImages(string(argv[3]), vstrImageLeft, vstrImageRight, vTimestamps);
+    // path_to_sequence should have at least 3 sub intents : times.txt img0 img1
+    // see LoadImages in this file for detail
+    const int SPLIT_NUM = 1;
+    const auto nImages = vstrImageLeft.size();
+    const int subNum = ceil(nImages / SPLIT_NUM);
+
+//split datasets
+    vector<vector<string>> subLeftImg(SPLIT_NUM), subRightImg(SPLIT_NUM);
+    vector<vector<double>> subvTimestamps(SPLIT_NUM);
+    vector<std::thread> thread_pool(SPLIT_NUM);
+
+    for (int i = 0; i < SPLIT_NUM; i++) {
+
+        if (i != SPLIT_NUM - 1) {
+            subLeftImg[i].assign(vstrImageLeft.begin() + i * subNum, vstrImageLeft.begin() + (i + 1) * subNum);
+            subRightImg[i].assign(vstrImageRight.begin() + i * subNum, vstrImageRight.begin() + (i + 1) * subNum);
+            subvTimestamps[i].assign(vTimestamps.begin() + i * subNum, vTimestamps.begin() + (i + 1) * subNum);
+
+        } else {
+            subLeftImg[i].assign(vstrImageLeft.begin() + i * subNum, vstrImageLeft.end());
+            subRightImg[i].assign(vstrImageRight.begin() + i * subNum, vstrImageRight.end());
+            subvTimestamps[i].assign(vTimestamps.begin() + i * subNum, vTimestamps.end());
+        }
+
+//        thread_pool[i]=std::thread(StartSLAMSystem,argv[1],argv[2],num,limg,rimg,ts);
+
+    }
+    int i = 0;
+
+    for (auto &lthr: thread_pool) {
+        unsigned long nums = subLeftImg[i].size();
+        lthr = std::thread(StartSLAMSystem, argv[1], argv[2], nums,
+                           subLeftImg[i], subLeftImg[i], subvTimestamps[i], i);;
+        i++;
+
+    }
+
+    cout << "started " << SPLIT_NUM << " thread" << endl << endl;
+
+    //
+    for (auto &lthr: thread_pool) {
+        lthr.join();
+    }
+    return 0;
+
+
+}
+
 
 void LoadImages(const string &strPathToSequence, vector<string> &vstrImageLeft,
                 vector<string> &vstrImageRight, vector<double> &vTimestamps) {
