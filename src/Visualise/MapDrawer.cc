@@ -108,6 +108,7 @@ namespace ORB_SLAM3 {
     }
 
     void MapDrawer::DrawMapPoints() {
+        // todo !! this is how MAP are showed
         Map *pActiveMap = mpAtlas->GetCurrentMap();
         if (!pActiveMap)
             return;

@@ -34,6 +34,9 @@ namespace ORB_SLAM3 {
 //        mbStopTrack = false;
 //    }
     atomic<int> Viewer::smpWindow_ID = 0;
+//    atomic<bool> Viewer::isCreating = false;
+    std::mutex Viewer::mMutexCreateWin = std::mutex();
+
 
     Viewer::Viewer(System *pSystem, FrameDrawer *pFrameDrawer, MapDrawer *pMapDrawer, Tracking *pTracking,
                    const string &strSettingPath, Settings *settings) :
@@ -154,8 +157,9 @@ namespace ORB_SLAM3 {
         mbFinished = false;
         mbStopped = false;
         cout << "starting pangolin viewer on thread " + to_string(mpWindow_ID) << endl;
+        mMutexCreateWin.lock();
+
         pangolin::CreateWindowAndBind("ORB-SLAM3: Map Viewer " + to_string(mpWindow_ID), 1024, 768);
-        cout << "created pangolin viewer on thread " + to_string(mpWindow_ID) << endl;
         // 3D Mouse handler requires depth testing to be enabled
         glEnable(GL_DEPTH_TEST);
 
@@ -208,6 +212,7 @@ namespace ORB_SLAM3 {
 
         float trackedImageScale = mpTracker->GetImageScale();
 
+        mMutexCreateWin.unlock();
         cout << "Starting the Viewer" << endl;
         while (1) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

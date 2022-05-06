@@ -158,7 +158,7 @@ add_executable(Distributed_stereo
 target_link_libraries(Distributed_stereo ORB_SLAM3)
 
 add_library(Distributed_SLAM SHARED
-        src/Disctributed/Viewer.cpp
-        include/Distributed/Viewer.h)
+        src/Disctributed/DViewer.cpp
+        include/Distributed/DViewer.h src/Disctributed/DAtlas.cpp include/Distributed/DAtlas.h)
 
 target_link_libraries(Distributed_SLAM ORB_SLAM3)

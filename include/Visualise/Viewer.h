@@ -46,6 +46,8 @@ namespace ORB_SLAM3 {
     class Settings;
 
     class Viewer {
+
+
     public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 //        Viewer(System *pSystem, FrameDrawer *pFrameDrawer, MapDrawer *pMapDrawer, Tracking *pTracking,
@@ -56,13 +58,13 @@ namespace ORB_SLAM3 {
 
         Viewer(const Viewer &);
 
-        ~Viewer();
+        virtual ~Viewer();
 
         void newParameterLoader(Settings *settings);
 
         // Main thread function. Draw points, keyframes, the current camera pose and the last processed
         // frame. Drawing is refreshed according to the camera fps. We use Pangolin.
-        void Run();
+        virtual void Run();
 
         void RequestFinish();
 
@@ -80,13 +82,15 @@ namespace ORB_SLAM3 {
 
         bool both;
     private:
+        friend class DViewer;
 
         bool ParseViewerParamFile(cv::FileStorage &fSettings);
 
         bool Stop();
 
+//        static atomic<bool> isCreating;
+        static std::mutex mMutexCreateWin;
         static atomic<int> smpWindow_ID;
-
         int mpWindow_ID;
 
         System *mpSystem;
