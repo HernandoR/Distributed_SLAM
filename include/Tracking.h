@@ -34,7 +34,7 @@
 #include "ORBextractor.h"
 #include "Visualise/MapDrawer.h"
 #include "System.h"
-#include "Visualise/ImuTypes.h"
+#include "Types/ImuTypes.h"
 #include "Settings.h"
 
 #include "GeometricCamera.h"
@@ -166,7 +166,7 @@ namespace ORB_SLAM3 {
 
         // Lists used to recover the full camera trajectory at the end of the execution.
         // Basically we store the reference keyframe for each frame and its relative transformation
-        list<Sophus::SE3f> mlRelativeFramePoses;
+        list <Sophus::SE3f> mlRelativeFramePoses;
         list<KeyFrame *> mlpReferences;
         list<double> mlFrameTimes;
         list<bool> mlbLost;

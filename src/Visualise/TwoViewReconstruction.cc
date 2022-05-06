@@ -18,7 +18,7 @@
 
 #include "Visualise/TwoViewReconstruction.h"
 
-#include "Visualise/Converter.h"
+#include "Types/Converter.h"
 #include "GeometricTools.h"
 
 #include "Thirdparty/DBoW2/DUtils/Random.h"

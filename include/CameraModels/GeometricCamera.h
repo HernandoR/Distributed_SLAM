@@ -36,7 +36,7 @@
 
 #include <Eigen/Geometry>
 
-#include "Visualise/Converter.h"
+#include "Types/Converter.h"
 #include "GeometricTools.h"
 
 namespace ORB_SLAM3 {

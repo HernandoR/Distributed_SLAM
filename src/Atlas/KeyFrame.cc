@@ -17,8 +17,8 @@
 */
 
 #include "Atlas/KeyFrame.h"
-#include "Visualise/Converter.h"
-#include "Visualise/ImuTypes.h"
+#include "Types/Converter.h"
+#include "Types/ImuTypes.h"
 #include<mutex>
 
 namespace ORB_SLAM3 {

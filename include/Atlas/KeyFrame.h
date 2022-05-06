@@ -27,7 +27,7 @@
 #include "ORBextractor.h"
 #include "Frame.h"
 #include "KeyFrameDatabase.h"
-#include "Visualise/ImuTypes.h"
+#include "Types/ImuTypes.h"
 
 #include "GeometricCamera.h"
 #include "Visualise/SerializationUtils.h"

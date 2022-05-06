@@ -121,9 +121,9 @@ add_library(ORB_SLAM3 SHARED
         include/Visualise/Viewer.h
         include/Visualise/ORBVocabulary.h
         include/Visualise/SerializationUtils.h
-        include/Visualise/ImuTypes.h
-        include/Visualise/G2oTypes.h
-        include/Visualise/Converter.h
+        include/Types/ImuTypes.h
+        include/Types/G2oTypes.h
+        include/Types/Converter.h
         )
 
 add_subdirectory(Thirdparty/g2o)

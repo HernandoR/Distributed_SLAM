@@ -21,7 +21,7 @@
 #include "LoopClosing.h"
 #include "ORBmatcher.h"
 #include "Optimizer.h"
-#include "Visualise/Converter.h"
+#include "Types/Converter.h"
 #include "GeometricTools.h"
 
 #include<mutex>

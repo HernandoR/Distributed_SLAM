@@ -16,8 +16,8 @@
 * If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "Visualise/ImuTypes.h"
-#include "Visualise/Converter.h"
+#include "Types/ImuTypes.h"
+#include "Types/Converter.h"
 
 #include "GeometricTools.h"
 

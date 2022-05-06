@@ -34,8 +34,8 @@
 #include "Thirdparty/g2o/g2o/types/types_six_dof_expmap.h"
 #include "Thirdparty/g2o/g2o/core/robust_kernel_impl.h"
 #include "Thirdparty/g2o/g2o/solvers/linear_solver_dense.h"
-#include "Visualise/G2oTypes.h"
-#include "Visualise/Converter.h"
+#include "Types/G2oTypes.h"
+#include "Types/Converter.h"
 
 #include<mutex>
 

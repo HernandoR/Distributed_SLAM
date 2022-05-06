@@ -20,10 +20,10 @@
 #include "LoopClosing.h"
 
 #include "Sim3Solver.h"
-#include "Visualise/Converter.h"
+#include "Types/Converter.h"
 #include "Optimizer.h"
 #include "ORBmatcher.h"
-#include "Visualise/G2oTypes.h"
+#include "Types/G2oTypes.h"
 
 #include<mutex>
 #include<thread>

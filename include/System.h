@@ -37,7 +37,7 @@
 #include "Atlas/KeyFrameDatabase.h"
 #include "Visualise/ORBVocabulary.h"
 #include "Visualise/Viewer.h"
-#include "Visualise/ImuTypes.h"
+#include "Types/ImuTypes.h"
 #include "Settings.h"
 
 

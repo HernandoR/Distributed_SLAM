@@ -21,8 +21,8 @@
 
 #include "ORBmatcher.h"
 #include "Visualise/FrameDrawer.h"
-#include "Visualise/Converter.h"
-#include "Visualise/G2oTypes.h"
+#include "Types/Converter.h"
+#include "Types/G2oTypes.h"
 #include "Optimizer.h"
 #include "Pinhole.h"
 #include "KannalaBrandt8.h"

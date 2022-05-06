@@ -27,10 +27,10 @@
 
 #include "Thirdparty/Sophus/sophus/geometry.hpp"
 
-#include "Visualise/ImuTypes.h"
+#include "Types/ImuTypes.h"
 #include "Visualise/ORBVocabulary.h"
 
-#include "Visualise/Converter.h"
+#include "Types/Converter.h"
 #include "Settings.h"
 
 #include <mutex>

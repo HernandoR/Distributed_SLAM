@@ -16,9 +16,9 @@
 * If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "Visualise/G2oTypes.h"
-#include "Visualise/ImuTypes.h"
-#include "Visualise/Converter.h"
+#include "Types/G2oTypes.h"
+#include "Types/ImuTypes.h"
+#include "Types/Converter.h"
 
 namespace ORB_SLAM3 {
 

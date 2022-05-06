@@ -17,7 +17,7 @@
  */
 
 #include "System.h"
-#include "Visualise/Converter.h"
+#include "Types/Converter.h"
 #include <thread>
 #include <pangolin/pangolin.h>
 #include <iomanip>

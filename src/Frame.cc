@@ -18,11 +18,11 @@
 
 #include "Frame.h"
 
-#include "Visualise/G2oTypes.h"
+#include "Types/G2oTypes.h"
 #include "Atlas/MapPoint.h"
 #include "Atlas/KeyFrame.h"
 #include "ORBextractor.h"
-#include "Visualise/Converter.h"
+#include "Types/Converter.h"
 #include "ORBmatcher.h"
 #include "GeometricCamera.h"
 
